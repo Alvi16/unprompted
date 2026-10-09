@@ -1,6 +1,11 @@
-"""Ouverture réelle de la fenêtre. Ignoré lorsqu'aucun écran n'est disponible."""
+"""Ouverture réelle de la fenêtre.
+
+Si l'environnement ne permet pas de démarrer Tk (aucun écran, fichiers d'initialisation
+illisibles), les tests sont ignorés avec la cause. Toute autre erreur reste un échec.
+"""
 
 import random
+import time
 import tkinter
 
 import pytest
@@ -10,16 +15,26 @@ from unprompted.gui.app import UnpromptedApp
 from unprompted.modes import Mode
 from unprompted.topics import CATALOGUE, THEMES
 
-
-def _display_available() -> bool:
-    try:
-        tkinter.Tk().destroy()
-    except tkinter.TclError:
-        return False
-    return True
+TK_START_ATTEMPTS = 3
+TK_RETRY_DELAY_S = 0.5
+ENVIRONMENT_FAILURE_MARKERS = ("init.tcl", "tcl_findLibrary", "display")
 
 
-pytestmark = pytest.mark.skipif(not _display_available(), reason="aucun écran disponible")
+def _is_environment_failure(error: tkinter.TclError) -> bool:
+    return any(marker in str(error) for marker in ENVIRONMENT_FAILURE_MARKERS)
+
+
+def _open_window(flow: SessionFlow) -> UnpromptedApp:
+    for attempt in range(1, TK_START_ATTEMPTS + 1):
+        try:
+            return UnpromptedApp(flow=flow, spin_frames=0)
+        except tkinter.TclError as error:
+            if not _is_environment_failure(error):
+                raise
+            if attempt == TK_START_ATTEMPTS:
+                pytest.skip(f"Tk ne démarre pas dans cet environnement : {error}")
+            time.sleep(TK_RETRY_DELAY_S)
+    raise AssertionError("inaccessible")
 
 
 @pytest.fixture
@@ -30,7 +45,7 @@ def rings():
 @pytest.fixture
 def app(clock, rings, monkeypatch):
     flow = SessionFlow(rng=random.Random(0), clock=clock.monotonic)
-    window = UnpromptedApp(flow=flow, spin_frames=0)
+    window = _open_window(flow)
     window.withdraw()
     monkeypatch.setattr(window, "bell", lambda *args, **kwargs: rings.append(1))
     yield window
