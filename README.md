@@ -223,7 +223,7 @@ ruff format --check .
 
 ### Vérification automatique
 
-À chaque envoi de code (push) et à chaque pull request, GitHub Actions (`.github/workflows/ci.yml`) exécute le contrôle de style, les tests et un lancement du terminal, sous Linux, Windows et macOS, avec Python 3.10, 3.11, 3.12 et 3.13, soit 12 combinaisons. Les résultats se consultent dans l'onglet Actions du dépôt. Les versions des outils restent fixées dans `requirements-dev.txt` : aucune mise à jour automatique n'est configurée.
+À chaque envoi de code (push) et à chaque pull request, GitHub Actions (`.github/workflows/ci.yml`) exécute le contrôle de style, les tests et un lancement du terminal, sous Linux et macOS, avec Python 3.10, 3.11, 3.12 et 3.13, soit 8 combinaisons. Les résultats se consultent dans l'onglet Actions du dépôt. Les versions des outils restent fixées dans `requirements-dev.txt` : aucune mise à jour automatique n'est configurée.
 
 ## Plateformes testées
 
@@ -233,7 +233,7 @@ ruff format --check .
 | Python | 3.12.3 |
 | Parcours vérifié | clone du dépôt, environnement virtuel vierge, installation de `requirements-dev.txt`, tests, vérification de style, lancement du terminal |
 
-Windows, macOS et les autres versions de Python n'ont pas été testés à la main : leurs résultats automatiques sont dans l'onglet Actions du dépôt.
+Windows n'est ni testé à la main ni vérifié automatiquement. macOS et les autres versions de Python n'ont pas été testés à la main : leurs résultats automatiques sont dans l'onglet Actions du dépôt.
 
 ## Structure du dépôt
 

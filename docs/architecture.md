@@ -179,4 +179,4 @@ D'autres fichiers concernent l'environnement de développement et la vérificati
 |---|---|
 | `requirements-dev.txt` | Liste les outils de vérification avec leurs versions exactes (`pytest`, `ruff`). S'installe avec `pip install -r requirements-dev.txt`. Le programme lui-même n'a aucune dépendance |
 | `.gitignore` | Exclut du dépôt les fichiers générés : `__pycache__/`, `*.pyc`, `.pytest_cache/`, `.ruff_cache/` et `.venv/` |
-| `.github/workflows/ci.yml` | Workflow GitHub Actions : sur chaque push et pull request, installe les outils, contrôle le style, lance les tests (sous écran virtuel sur Linux) puis un lancement du terminal, pour Linux, Windows et macOS avec Python 3.10 à 3.13 |
+| `.github/workflows/ci.yml` | Workflow GitHub Actions : sur chaque push et pull request, installe les outils, contrôle le style, lance les tests (sous écran virtuel sur Linux) puis un lancement du terminal, pour Linux et macOS avec Python 3.10 à 3.13 |

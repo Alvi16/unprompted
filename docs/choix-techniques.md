@@ -75,9 +75,9 @@ Ce document recense les décisions du projet : le contexte, les options comparé
 
 **Options.** Ne rien automatiser, ou utiliser GitHub Actions, gratuit pour un dépôt public.
 
-**Décision.** Un workflow GitHub Actions exécute le contrôle de style, les tests et un lancement du terminal sous Linux, Windows et macOS, avec Python 3.10, 3.11, 3.12 et 3.13 (12 combinaisons).
+**Décision.** Un workflow GitHub Actions exécute le contrôle de style, les tests et un lancement du terminal sous Linux et macOS, avec Python 3.10, 3.11, 3.12 et 3.13 (8 combinaisons). Windows a été retiré : ses machines de test échouaient de façon intermittente à ouvrir Tk, sans que le programme soit en cause, ce qui rendait le résultat inexploitable.
 
-**Conséquences.** Les résultats pour Windows, macOS et les autres versions de Python sont connus sans posséder ces machines, et visibles dans l'onglet Actions. Les versions des outils restent fixées à la main dans `requirements-dev.txt` : aucune mise à jour automatique n'est configurée. La version minimale de Python réellement prise en charge est établie par ces résultats, pas par une supposition. Les tests qui ouvrent la fenêtre sont ignorés sur une machine sans écran ; leur exécution effective sous Windows et macOS dépend de l'environnement de GitHub et se lit dans les résultats.
+**Conséquences.** Les résultats pour macOS et les autres versions de Python sont connus sans posséder ces machines, et visibles dans l'onglet Actions. Windows n'est ni testé à la main ni vérifié automatiquement. Les versions des outils restent fixées à la main dans `requirements-dev.txt` : aucune mise à jour automatique n'est configurée. La version minimale de Python réellement prise en charge est établie par ces résultats, pas par une supposition. Les tests qui ouvrent la fenêtre sont ignorés sur une machine sans écran ; leur exécution effective sous macOS dépend de l'environnement de GitHub et se lit dans les résultats.
 
 ## Séparation du cœur et de l'interaction
 
@@ -175,7 +175,7 @@ Une première version partageait un seul catalogue entre les deux modes. Elle a 
 | Taille de la fenêtre | Environ 900 pixels de haut avec les polices de la machine de développement : elle peut dépasser un écran de faible hauteur. |
 | Rendu | Pas de coins arrondis, d'ombres ni de dégradés : limites de Tkinter. |
 | Polices | Inter et JetBrains Mono de la charte sont remplacées lorsqu'elles ne sont pas installées. |
-| Plateformes | Testé à la main uniquement sous Ubuntu 24.04 avec Python 3.12.3. Les autres systèmes et versions de Python sont vérifiés par l'intégration continue : leurs résultats sont dans l'onglet Actions du dépôt. |
+| Plateformes | Testé à la main uniquement sous Ubuntu 24.04 avec Python 3.12.3. macOS et les versions 3.10 à 3.13 de Python sont vérifiés par l'intégration continue (résultats dans l'onglet Actions du dépôt). Windows n'est ni testé à la main ni vérifié automatiquement. |
 | Installation | Pas de paquet installable : le programme se lance depuis la racine du dépôt. Les versions des outils de vérification sont fixées dans `requirements-dev.txt` et se mettent à jour à la main. |
 | Fenêtre | Sans Tkinter ou sans écran, la version terminal se lance à la place : la fenêtre n'est pas garantie sur tous les appareils. |
 | Licence | Aucune licence n'est fournie dans le dépôt ; elle reste à choisir par l'auteur. |
