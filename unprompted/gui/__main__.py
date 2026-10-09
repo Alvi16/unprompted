@@ -1,14 +1,20 @@
-"""Point d'entrée de l'interface graphique : python3 -m unprompted.gui"""
+"""Point d'entrée de l'interface graphique : python3 -m unprompted.gui
+
+Si la fenêtre ne peut pas s'ouvrir (Tkinter absent, aucun écran), la version terminal
+est lancée à la place, pour que la même commande fonctionne sur tout appareil.
+"""
 
 import sys
 
-EXIT_CANNOT_OPEN = 1
+from ..__main__ import main as run_terminal
 
 MISSING_TKINTER_MESSAGE = (
-    "Tkinter est introuvable : {error}\n"
-    "L'interface graphique en a besoin. Installez la prise en charge de Tkinter "
-    "pour votre version de Python (sur Debian et Ubuntu : sudo apt install python3-tk), "
-    "ou utilisez la version terminal : python3 -m unprompted\n"
+    "Tkinter est introuvable ({error}). Lancement de la version terminal.\n"
+    "Pour obtenir la fenêtre, installez Tkinter pour votre version de Python "
+    "(sur Debian et Ubuntu : sudo apt install python3-tk).\n"
+)
+CANNOT_OPEN_MESSAGE = (
+    "Impossible d'ouvrir la fenêtre ({error}). Lancement de la version terminal.\n"
 )
 
 
@@ -19,13 +25,13 @@ def main() -> int:
         from .app import UnpromptedApp
     except ImportError as error:
         sys.stderr.write(MISSING_TKINTER_MESSAGE.format(error=error))
-        return EXIT_CANNOT_OPEN
+        return run_terminal()
 
     try:
         app = UnpromptedApp()
     except tkinter.TclError as error:
-        sys.stderr.write(f"Impossible d'ouvrir la fenêtre : {error}\n")
-        return EXIT_CANNOT_OPEN
+        sys.stderr.write(CANNOT_OPEN_MESSAGE.format(error=error))
+        return run_terminal()
     app.mainloop()
     return 0
 
