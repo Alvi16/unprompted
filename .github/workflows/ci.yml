@@ -33,13 +33,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb
-          xvfb-run --auto-servernum python -m pytest
+          xvfb-run --auto-servernum python -m pytest -rs
 
       - name: Run tests (Windows and macOS)
         if: runner.os != 'Linux'
-        run: python -m pytest
+        run: python -m pytest -rs
 
       - name: Launch the terminal version and interrupt it
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
           status=0
