@@ -55,9 +55,29 @@ Ce document recense les décisions du projet : le contexte, les options comparé
 | Lancer depuis le dépôt (`python3 -m unprompted`) | Aucune installation, aucune dépendance | Le dossier courant doit être la racine du dépôt |
 | Paquet installable (`pip install`) | Commandes disponibles partout | Demande un outil de construction (`setuptools`), une déclaration de projet et un accès réseau à l'installation |
 
-**Décision.** Lancer depuis le dépôt. Le programme n'a aucune dépendance d'exécution, donc il n'y a rien à installer pour la version terminal. Les outils de vérification sont listés dans `requirements-dev.txt`, avec leurs versions exactes. La documentation décrit l'installation, le lancement et le dépannage, et la fenêtre explique elle-même ses échecs (Tkinter absent, aucun écran).
+**Décision.** Lancer depuis le dépôt. Le programme n'a aucune dépendance d'exécution, donc il n'y a rien à installer pour la version terminal. Les outils de vérification sont listés dans `requirements-dev.txt`, avec leurs versions exactes. La documentation décrit l'installation, le lancement et le dépannage, et la commande de la fenêtre se replie d'elle-même sur le terminal quand elle ne peut pas s'ouvrir (voir « Repli automatique vers le terminal »).
 
 **Conséquences.** Le parcours « cloner, créer un environnement virtuel, installer les outils, lancer les tests, lancer le programme » a été vérifié de bout en bout sur une copie propre. Lancer la commande depuis un autre dossier échoue avec `No module named unprompted`, ce que le dépannage du README explique. Les versions des outils sont fixées à la main et ne se mettent pas à jour seules.
+
+## Repli automatique vers le terminal
+
+**Contexte.** La fenêtre dépend de Tkinter, qui n'est pas toujours installé (paquet distinct sur Debian et Ubuntu), et d'un écran, qui n'existe pas sur une session distante. Sur un appareil inconnu, l'une ou l'autre peut manquer.
+
+**Options.** Afficher une erreur et s'arrêter, ou lancer automatiquement la version terminal.
+
+**Décision.** Lancer la version terminal, après un message qui donne la cause et, pour Tkinter, la marche à suivre pour obtenir la fenêtre. Le message va sur la sortie d'erreur.
+
+**Conséquences.** La même commande, `python3 -m unprompted.gui`, donne toujours un entraînement utilisable. Le code de sortie devient celui de la version terminal (0, ou 130 en cas d'interruption) : un échec d'ouverture de la fenêtre n'est plus signalé par un code d'erreur. Le test `test_gui_entry.py` vérifie les deux cas de repli.
+
+## Vérification automatique
+
+**Contexte.** Le projet doit fonctionner sur d'autres appareils, mais il n'est testé à la main que sous Ubuntu.
+
+**Options.** Ne rien automatiser, ou utiliser GitHub Actions, gratuit pour un dépôt public.
+
+**Décision.** Un workflow GitHub Actions exécute le contrôle de style, les tests et un lancement du terminal sous Linux, Windows et macOS, avec Python 3.10, 3.11, 3.12 et 3.13 (12 combinaisons).
+
+**Conséquences.** Les résultats pour Windows, macOS et les autres versions de Python sont connus sans posséder ces machines, et visibles dans l'onglet Actions. Les versions des outils restent fixées à la main dans `requirements-dev.txt` : aucune mise à jour automatique n'est configurée. La version minimale de Python réellement prise en charge est établie par ces résultats, pas par une supposition. Les tests qui ouvrent la fenêtre sont ignorés sur une machine sans écran ; leur exécution effective sous Windows et macOS dépend de l'environnement de GitHub et se lit dans les résultats.
 
 ## Séparation du cœur et de l'interaction
 
@@ -155,7 +175,7 @@ Une première version partageait un seul catalogue entre les deux modes. Elle a 
 | Taille de la fenêtre | Environ 900 pixels de haut avec les polices de la machine de développement : elle peut dépasser un écran de faible hauteur. |
 | Rendu | Pas de coins arrondis, d'ombres ni de dégradés : limites de Tkinter. |
 | Polices | Inter et JetBrains Mono de la charte sont remplacées lorsqu'elles ne sont pas installées. |
-| Plateformes | Testé uniquement sous Ubuntu 24.04 avec Python 3.12.3. Windows, macOS et les autres versions de Python ne sont pas testés. |
-| Installation | Pas de paquet installable : le programme se lance depuis la racine du dépôt. Les versions des outils de vérification sont fixées à la main. |
-| Vérification automatique | Aucune intégration continue : les tests et le contrôle de style se lancent à la main. |
+| Plateformes | Testé à la main uniquement sous Ubuntu 24.04 avec Python 3.12.3. Les autres systèmes et versions de Python sont vérifiés par l'intégration continue : leurs résultats sont dans l'onglet Actions du dépôt. |
+| Installation | Pas de paquet installable : le programme se lance depuis la racine du dépôt. Les versions des outils de vérification sont fixées dans `requirements-dev.txt` et se mettent à jour à la main. |
+| Fenêtre | Sans Tkinter ou sans écran, la version terminal se lance à la place : la fenêtre n'est pas garantie sur tous les appareils. |
 | Licence | Aucune licence n'est fournie dans le dépôt ; elle reste à choisir par l'auteur. |

@@ -10,7 +10,7 @@ cd unprompted
 python3 -m unprompted.gui
 ```
 
-La fenêtre demande Python 3.12 et Tkinter. Les détails, les autres systèmes et le dépannage sont plus bas.
+Si la fenêtre ne peut pas s'ouvrir (Tkinter absent, aucun écran), la version terminal se lance automatiquement à la place. Les détails, les autres systèmes et le dépannage sont plus bas.
 
 ## Installation
 
@@ -18,8 +18,8 @@ La fenêtre demande Python 3.12 et Tkinter. Les détails, les autres systèmes e
 
 | Élément | Version | Nécessaire pour | Remarque |
 |---|---|---|---|
-| Python | 3.12 (testé avec 3.12.3) | tout | Les autres versions n'ont pas été testées |
-| Tkinter | celui de votre Python | la fenêtre uniquement | Voir ci-dessous |
+| Python | 3.12 (testé localement avec 3.12.3) | tout | Les versions 3.10 à 3.13 sont vérifiées automatiquement sur GitHub : voir « Vérification automatique » |
+| Tkinter | celui de votre Python | la fenêtre uniquement | Sans lui, la version terminal se lance à la place. Voir ci-dessous |
 | Git | testé avec 2.43.0 | récupérer le code | Facultatif si vous téléchargez l'archive du dépôt |
 | `pytest`, `ruff` | voir `requirements-dev.txt` | les vérifications uniquement | Inutiles pour utiliser le programme |
 
@@ -71,12 +71,12 @@ Dans le terminal, `Ctrl+C` interrompt la session : le programme affiche « Sessi
 | Message ou symptôme | Cause | Solution |
 |---|---|---|
 | `No module named unprompted` | La commande est lancée hors de la racine du dépôt | Se placer dans le dossier qui contient `pyproject.toml` |
-| « Tkinter est introuvable » | Tkinter n'est pas installé | Voir « Installer Tkinter », ou utiliser `python3 -m unprompted` |
-| « Impossible d'ouvrir la fenêtre : no display name… » | Aucun écran disponible (session distante sans affichage, par exemple) | Lancer la commande sur une machine avec écran, ou utiliser `python3 -m unprompted` |
+| « Tkinter est introuvable… Lancement de la version terminal » | Tkinter n'est pas installé | Rien à faire pour s'entraîner. Pour la fenêtre : voir « Installer Tkinter » |
+| « Impossible d'ouvrir la fenêtre (no display name…) » | Aucun écran disponible (session distante sans affichage, par exemple) | Rien à faire pour s'entraîner. Pour la fenêtre : lancer la commande sur une machine avec écran |
 | `python3: command not found` | Python n'est pas installé, ou s'appelle autrement (Windows) | Installer Python 3.12, ou essayer `python` ou `py` |
 | Aucun son à la fin d'une phase | Le bip du système est coupé ou muet sur votre environnement | Le message « Temps de … écoulé ! » et le chrono rouge signalent aussi la fin |
 
-Lorsque la fenêtre ne peut pas s'ouvrir (Tkinter absent ou aucun écran), la commande se termine avec le code 1.
+Dans ces deux cas, la fenêtre ne s'ouvre pas, mais la commande lance la version terminal à la place : l'entraînement reste possible.
 
 ## Vocabulaire
 
@@ -221,6 +221,10 @@ ruff check .
 ruff format --check .
 ```
 
+### Vérification automatique
+
+À chaque envoi de code (push) et à chaque pull request, GitHub Actions (`.github/workflows/ci.yml`) exécute le contrôle de style, les tests et un lancement du terminal, sous Linux, Windows et macOS, avec Python 3.10, 3.11, 3.12 et 3.13, soit 12 combinaisons. Les résultats se consultent dans l'onglet Actions du dépôt. Les versions des outils restent fixées dans `requirements-dev.txt` : aucune mise à jour automatique n'est configurée.
+
 ## Plateformes testées
 
 | Élément | Valeur |
@@ -229,7 +233,7 @@ ruff format --check .
 | Python | 3.12.3 |
 | Parcours vérifié | clone du dépôt, environnement virtuel vierge, installation de `requirements-dev.txt`, tests, vérification de style, lancement du terminal |
 
-Windows et macOS n'ont pas été testés.
+Windows, macOS et les autres versions de Python n'ont pas été testés à la main : leurs résultats automatiques sont dans l'onglet Actions du dépôt.
 
 ## Structure du dépôt
 
@@ -237,6 +241,7 @@ Windows et macOS n'ont pas été testés.
 pyproject.toml            Réglages de ruff et de pytest
 requirements-dev.txt      Outils de vérification, versions fixées
 .gitignore                Fichiers générés exclus du dépôt
+.github/                  Vérification automatique sur GitHub (workflow ci.yml)
 unprompted/               Le programme
   modes.py                Les deux modes, leurs textes, bornes et durées proposées
   topics.py               Le catalogue : thèmes et sujets, par mode

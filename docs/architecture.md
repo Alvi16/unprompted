@@ -69,10 +69,12 @@ Une action hors de ces cas lève `InvalidAction`, y compris tirer un sujet sans 
 
 `__main__.main` entoure ce déroulé. `Ctrl+C` ou une entrée coupée produisent le message « Session interrompue. » et le code de sortie 130.
 
-Le point d'entrée de la fenêtre (`gui/__main__.py`) se comporte autrement. Il importe Tkinter lui-même, pour pouvoir expliquer l'échec au lieu d'afficher une trace d'erreur :
-- si Tkinter n'est pas installé, il écrit « Tkinter est introuvable » avec la marche à suivre (paquet `python3-tk` sur Debian et Ubuntu, ou version terminal) ;
-- si Tkinter ne peut pas ouvrir de fenêtre (aucun écran, par exemple), il écrit « Impossible d'ouvrir la fenêtre : » suivi de la cause ;
-- dans les deux cas, le message va sur la sortie d'erreur et le code de sortie est 1.
+Le point d'entrée de la fenêtre (`gui/__main__.py`) importe Tkinter lui-même, pour pouvoir replier sur le terminal au lieu d'afficher une trace d'erreur :
+- si Tkinter n'est pas installé, il écrit « Tkinter est introuvable » avec la marche à suivre (paquet `python3-tk` sur Debian et Ubuntu) ;
+- si Tkinter ne peut pas ouvrir de fenêtre (aucun écran, par exemple), il écrit « Impossible d'ouvrir la fenêtre » suivi de la cause ;
+- dans les deux cas, le message va sur la sortie d'erreur, puis il lance la version terminal (`unprompted/__main__.py`). Le code de sortie est alors celui du terminal : 0, ou 130 en cas d'interruption.
+
+Ainsi, la commande `python3 -m unprompted.gui` donne toujours un entraînement utilisable, même sans Tkinter ni écran.
 
 ## Déroulé dans la fenêtre
 
@@ -156,7 +158,7 @@ Un fichier de tests par module, plus un fichier d'outils partagés.
 | `test_session.py` | Ordre des étapes, sujet du thème et du mode choisis, vocabulaire du mode recherche, nombre de bips, durée totale |
 | `test_palette.py` | Calcul du contraste et lisibilité des couleurs du thème |
 | `test_theme.py` | Choix de la police parmi les candidates |
-| `test_gui_entry.py` | Messages et code de sortie du point d'entrée de la fenêtre quand Tkinter est absent ou qu'aucun écran n'est disponible. Ne demande pas d'écran |
+| `test_gui_entry.py` | Repli vers le terminal, avec son message, quand Tkinter est absent ou qu'aucun écran n'est disponible. Ne demande pas d'écran |
 | `test_gui_smoke.py` | Ouverture réelle de la fenêtre, tous les thèmes proposés, tirage impossible sans thème, parcours complet avec horloge simulée, bips, verrouillage, pause et réinitialisation. Ignoré s'il n'y a pas d'écran |
 
 ## Fichiers de configuration
@@ -171,9 +173,10 @@ Un fichier de tests par module, plus un fichier d'outils partagés.
 | `testpaths = ["tests"]` | `pytest` cherche les tests dans `tests/` |
 | `pythonpath = ["."]` | `pytest` ajoute la racine aux chemins d'import, ce qui lui permet de trouver le paquet `unprompted` |
 
-Deux autres fichiers de la racine concernent l'environnement de développement :
+D'autres fichiers concernent l'environnement de développement et la vérification :
 
 | Fichier | Rôle |
 |---|---|
 | `requirements-dev.txt` | Liste les outils de vérification avec leurs versions exactes (`pytest`, `ruff`). S'installe avec `pip install -r requirements-dev.txt`. Le programme lui-même n'a aucune dépendance |
 | `.gitignore` | Exclut du dépôt les fichiers générés : `__pycache__/`, `*.pyc`, `.pytest_cache/`, `.ruff_cache/` et `.venv/` |
+| `.github/workflows/ci.yml` | Workflow GitHub Actions : sur chaque push et pull request, installe les outils, contrôle le style, lance les tests (sous écran virtuel sur Linux) puis un lancement du terminal, pour Linux, Windows et macOS avec Python 3.10 à 3.13 |
